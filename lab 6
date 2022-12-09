@@ -1,0 +1,55 @@
+# 09.12 Hrypas Oleksandr isi 2 Lab 6
+
+select rodzaj, avg (year (dataUr)) from kreatura k group by k.rodzaj;
+# zadanie 2
+# 1)
+select rodzaj, sum(waga) as summa_wagy from zasob k group by k.rodzaj;
+# 2)
+
+select nazwa, avg(waga) as summa_wagy from zasob
+where ilosc >= 4
+group by rodzaj having summa_wagy > 10;
+
+# 3)
+select rodzaj, count(distinct(nazwa)) from zasob where ilosc > 1;
+
+# zadanie 3
+select * from kreatura;
+select * from zasob;
+select * from ekwipunek;
+
+# 1)
+select * from kreatura as k, ekwipunek e where k.idKreatury=e.idKreatury;
+# 2) iiner join
+select * from kreatura k inner join ekwipunek e on k.idKreatury=e.idKreatury inner join zasob z on e.idZasobu=z.idZasobu;
+
+#  przykład z wejsciowki select * from (select * from kreatura order by dataUr desc) order by dataUr asc;
+
+# 3) left join i podzapytanie
+
+select * from kreatura k left join ekwipunek e on k.idKreatury=e.idKreatury where e.idKreatury is null;
+# lub
+select idKreatury from kreatura;
+select idKreatury from ekwipunek;
+select * from kreatura where idKreatury not in (select distinct idKreatury from ekwipunek where idKreatury is not null);
+# zadanie 4
+# 1)
+select * from kreatura k 
+join ekwipunek e on k.idKreatury = e.idKreatury join zasob z on e.idZasobu = z.idZasobu
+where k.rodzaj ='wiking' and year(dataUr) between 1670 and 1679;
+# 2)
+select * from kreatura k 
+join ekwipunek e on k.idKreatury = e.idKreatury join zasob z on e.idZasobu = z.idZasobu
+where z.rodzaj = 'jedzenie' order by year (k.dataUr)  desc limit 5;
+# 3)
+select concat (k.nazwa , '-' , r.nazwa) from kreatura k
+join kreatura r on k.idKreatury = r.idKreatury + 5;
+# zadanie 5
+# 1)
+select * from zasob;
+select * from ekwipunek;
+select * from kreatura;
+
+select avg(e.waga) from zasob z
+join ekwipunek e on e.ilosc < 30 join kreatura k on k.rodzaj != 'waz' and  'malpa'
+group by rodzaj;
