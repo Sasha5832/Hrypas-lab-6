@@ -50,6 +50,29 @@ select * from zasob;
 select * from ekwipunek;
 select * from kreatura;
 
-select avg(e.waga) from zasob z
-join ekwipunek e on e.ilosc < 30 join kreatura k on k.rodzaj != 'waz' and  'malpa'
-group by rodzaj;
+select k.rodzaj, sum(z.waga * e.ilosc) / count(distinct e.idKreatury) from kreatura k 
+inner join ekwipunek e on k.idKreatury = e.idKreatury 
+inner join zasob z on z.idZasobu = e.idZasobu
+where k.rodzaj not in ('malpa','waz') # and e.ilosc < 30
+group by k.rodzaj
+having sum(e.ilosc) < 30;
+
+
+
+# select k.rodzaj, group_Concat(k.nazwa), count(*), sum(e.ilosc*z.waga) from kreatura k inner join ekwipunek e on k.idKreatury=e.idKreatury inner join zasob z on z.idZasobu = e.idZasobu group by k.rodzaj;
+
+# 2) union
+ select 'najmlodsza', a.maxData, b.nazwa, a.rodzaj
+ from (select max(dataUr) maxData, rodzaj from kreatura group by rodzaj) a,
+ (select nazwa, dataUr from kreatura) b
+ where a.maxData= b.dataUr
+ union
+select 'najstarsza', a.minData, b.nazwa, a.rodzaj
+from (select min(dataUr) minData, rodzaj from kreatura group by rodzaj) a,
+(select nazwa, dataUr from kreatura) b
+where a.minData = b.dataUr;
+
+# lub podzapytanie 
+
+select a.nazwa, a.rodzaj, a.dataUr from kreatura a,(select min(dataUr) min, max(dataUr) max from kreatura group by rodzaj) b
+where b.min = a.dataUr or b.max=a.dataUr;
